@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+                xmlns:xsi="http:www.w3.org/2001/XMLSchema-instance"
+               xmlns:context="http://www.springframework.org/schema/context"
+               xsi:schemaLocation="http:www.springframework.org/schema/beans
+               http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="org.smart4j.framework"/>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <bean id="greetingProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="interfaces" value = "aop.Greeting"/>
+        <property name="target" ref="GreetingImpl"/>
+        <property name="interceptorNames" value="greetingAroundAdvice">
+           <!-- <list>
+                <value>greetingAroundAdvice</value>
+            </list>-->
+        </property>
+    </bean>
+
+    <bean id="greetingProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="interfaces" value="aop.demo.Applogy"></property>
+        <property name="target" ref="greetingImpl"/>
+        <property name="interceptorNames" value="greetingIntroAdvice"/>
+        <property name="proxyTargetClass" value="true"/>
+    </bean>
+
+    <bean id="greetingAdvisor" class="org.springframenwork.aop.suppprt.RegexMethodPointcutAdvisor">
+        <property name="advice" ref="greetingAroundAdvice"/>
+        <property name="pattern" value="aop.demo.GreetingImpl.good.*"/>
+    </bean>
+
+    <bean id="greetingProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="greetingImpl"/>
+        <property name="interceptorNames" value="greetingAdvisor"/>
+        <property name="proxyTargetClass" value="true"/>
+    </bean>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="*Impl"/>
+        <property name="interceptorNames" value="greetingAroundAdvice"/>
+        <property name="optimimze" value="true"/>
+    </bean>
+
+    <bean id="greetingImpl" class="org.smart4j.framework"/>
+    <bean id="greetingAspect" class="aop.demo.GreetingAspect"/>
+    <aop:config>
+        <aop:aspect ref="greetingAspect">
+            <aop:around method="around" pointcut="execution(* aop.demo.GreetingIMPL.*(..))"/>
+        </aop:aspect>
+    </aop:config>
+
+
+
+</beans>
